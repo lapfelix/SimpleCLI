@@ -66,7 +66,7 @@ open class SimpleCLI {
         }
     }
     
-    func parseArguments(_ args: [String]) throws -> Dictionary<String, String>? {
+    func parseArguments(_ args: [String]) throws -> Dictionary<String, String> {
         var dictionary : Dictionary<String, String> = [:]
         var currentArgument : Argument?
 
