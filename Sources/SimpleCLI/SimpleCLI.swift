@@ -8,20 +8,20 @@
 
 import Foundation
 
-enum ArgumentType {
+public enum ArgumentType {
     case keyOnly
     case keyAndValue
     case valueOnly
 }
 
-struct Argument {
+public struct Argument {
     let longName: String
     let shortName: String?
     let type: ArgumentType
     let defaultValue: String?
     let obligatory: Bool?
 
-    init(longName: String,
+    public init(longName: String,
          shortName: String? = nil,
          type: ArgumentType = .keyAndValue,
          defaultValue: String? = nil,
@@ -34,7 +34,7 @@ struct Argument {
     }
 }
 
-class SimpleCLI {
+open class SimpleCLI {
     enum ProcessingError: Error {
         case requiredKeyHasNoValue(key: String)
         case unexpectedValueWithoutKey(value: String)
@@ -45,7 +45,7 @@ class SimpleCLI {
     let configuration : [Argument]
     let singleValueArgument : Argument?
 
-    init(configuration config: [Argument]) {
+    public init(configuration config: [Argument]) {
         let singleValueArgumentArray = config.filter({$0.type == .valueOnly})
         if (singleValueArgumentArray.count > 1) {
             print("Error: Too many single value arguments")
@@ -56,7 +56,7 @@ class SimpleCLI {
         configuration = config
     }
 
-    func parseArgs(_ args: [String]) -> Dictionary<String, String>? {
+    public func parseArgs(_ args: [String]) -> Dictionary<String, String>? {
         do {
             return try parseArguments(args)
         } catch {
