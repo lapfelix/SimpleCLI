@@ -19,18 +19,24 @@ public struct Argument {
     let shortName: String?
     let type: ArgumentType
     let defaultValue: String?
-    let obligatory: Bool?
+    let obligatory: Bool
+    let description: String?
+    let inputName: String?
 
     public init(longName: String,
          shortName: String? = nil,
          type: ArgumentType = .keyAndValue,
          defaultValue: String? = nil,
-         obligatory: Bool? = false) {
+         obligatory: Bool = false,
+         description: String? = nil,
+         inputName: String? = nil) {
         self.longName = longName
         self.shortName = shortName
         self.type = type
         self.defaultValue = defaultValue
         self.obligatory = obligatory
+        self.description = description
+        self.inputName = inputName
     }
 }
 
@@ -62,10 +68,47 @@ open class SimpleCLI {
         } catch {
             // print the automatically generated help
             print(error)
+            print(self.helpString(args))
             return [:]
         }
     }
     
+    public func helpString(_ args: [String]) -> String {
+        let executableName = URL.init(fileURLWithPath: args[0]).lastPathComponent
+        var helpString = "Usage: \(executableName)"
+        for argument in configuration {
+            var string = " "
+
+            switch (argument.type) {
+                case .keyAndValue: 
+                    string.append("--\(argument.longName)")
+                    if let inputName = argument.inputName {
+                        string.append(" <\(inputName)>")
+                    } else {
+                        string.append(" <value>")
+                    }
+
+                case .keyOnly: 
+                    string.append("--\(argument.longName)")
+
+                case .valueOnly:
+                    if let inputName = argument.inputName {
+                        string.append("<\(inputName)>")
+                    } else {
+                        string.append("<value>")
+                    }
+            }
+
+            if (!argument.obligatory) {
+                string = "[\(string)]"
+            }
+
+            helpString.append(string)
+        }
+
+        return helpString
+    }
+
     func parseArguments(_ args: [String]) throws -> Dictionary<String, String> {
         var dictionary : Dictionary<String, String> = [:]
         var currentArgument : Argument?
@@ -156,7 +199,7 @@ open class SimpleCLI {
             return defaultValue
         }
 
-        if (argument.obligatory ?? false) {
+        if (argument.obligatory) {
             throw ProcessingError.requiredKeyHasNoValue(key: argument.longName)
         }
         else {
