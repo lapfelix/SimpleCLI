@@ -77,7 +77,7 @@ open class SimpleCLI {
         let executableName = URL.init(fileURLWithPath: args[0]).lastPathComponent
         var helpString = "Usage: \(executableName)"
         for argument in configuration {
-            var string = " "
+            var string = ""
 
             switch (argument.type) {
                 case .keyAndValue: 
@@ -90,7 +90,7 @@ open class SimpleCLI {
 
                 case .keyOnly: 
                     string.append("--\(argument.longName)")
-
+                    
                 case .valueOnly:
                     if let inputName = argument.inputName {
                         string.append("<\(inputName)>")
@@ -100,7 +100,10 @@ open class SimpleCLI {
             }
 
             if (!argument.obligatory) {
-                string = "[\(string)]"
+                string = " [\(string)]"
+            }
+            else {
+                string = " \(string)"
             }
 
             helpString.append(string)
