@@ -88,12 +88,16 @@ open class SimpleCLI {
                         string.append(" <value>")
                     }
 
-                case .keyOnly: 
-                    string.append("--\(argument.longName)")
+                case .keyOnly:
+                    var keyString = argument.longName
+                    if let shortName = argument.shortName {
+                        keyString.append(" | -\(shortName)")
+                    }
+                    string.append("--\(keyString)")
                     
                 case .valueOnly:
                     if let inputName = argument.inputName {
-                        string.append("<\(inputName)>")
+                        string.append("\(inputName)")
                     } else {
                         string.append("<value>")
                     }

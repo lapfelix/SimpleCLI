@@ -33,23 +33,28 @@ final class SimpleCLITests: XCTestCase {
     }
 
     func testHelpStringOneArgKeyValue() {
-        let simpleCLI = SimpleCLI(configuration: [Argument(longName: "input", shortName: "i", type: .keyAndValue, obligatory: true, description: "File used as input for processing", inputName: "/path/to/file")])
+        let simpleCLI = SimpleCLI(configuration: [Argument(longName: "input", type: .keyAndValue, obligatory: true, description: "File used as input for processing", inputName: "/path/to/file")])
         let helpString = simpleCLI.helpString(["executable", "uh"])
         XCTAssertEqual(helpString, "Usage: executable --input </path/to/file>")
     }
 
     func testHelpStringOneArgValueOnly() {
-        let simpleCLI = SimpleCLI(configuration: [Argument(longName: "input", shortName: "i", type: .valueOnly, obligatory: true, description: "File used as input for processing", inputName: "/path/to/file")])
+        let simpleCLI = SimpleCLI(configuration: [Argument(longName: "input", type: .valueOnly, obligatory: true, description: "File used as input for processing", inputName: "/path/to/file")])
         let helpString = simpleCLI.helpString(["executable", "uh"])
         XCTAssertEqual(helpString, "Usage: executable </path/to/file>")
     }
 
     func testHelpStringOneArgKeyOnly() {
-        let simpleCLI = SimpleCLI(configuration: [Argument(longName: "input", shortName: "i", type: .keyOnly, obligatory: true, description: "File used as input for processing", inputName: "/path/to/file")])
+        let simpleCLI = SimpleCLI(configuration: [Argument(longName: "input", type: .keyOnly, obligatory: true, description: "File used as input for processing", inputName: "/path/to/file")])
         let helpString = simpleCLI.helpString(["executable", "uh"])
         XCTAssertEqual(helpString, "Usage: executable --input")
     }
 
+    func testHelpStringOneOptionalKeyOnly() {
+        let simpleCLI = SimpleCLI(configuration: [Argument(longName: "input", shortName: "i", type: .keyOnly, description: "File used as input for processing", inputName: "/path/to/file")])
+        let helpString = simpleCLI.helpString(["executable", "uh"])
+        XCTAssertEqual(helpString, "Usage: executable [--input | -i]")
+    }
 
     func testHelpStringOneAllTypes() {
         let simpleCLI = SimpleCLI(configuration: [
@@ -66,13 +71,34 @@ final class SimpleCLITests: XCTestCase {
             description: "File used as input for processing", 
             inputName: "valueOnly"),
             Argument(longName: "keyOnly",
-            shortName: "i", 
             type: .keyOnly,
             obligatory: true, 
             description: "File used as input for processing"),])
 
         let helpString = simpleCLI.helpString(["executable", "uh"])
         XCTAssertEqual(helpString, "Usage: executable --keyValue </path/to/file> <valueOnly> --keyOnly")
+    }
+
+    func testBluetoothConnectorTest() {
+        let simpleCLI = SimpleCLI(configuration: [
+            Argument(longName: "connect",
+            shortName: "c", 
+            type: .keyOnly, 
+            description: "Use to always connect (instead of the default toggle behavior)", 
+            inputName: "/path/to/file"),
+            Argument(longName: "disconnect",
+            shortName: "d", 
+            type: .keyOnly,
+            description: "Use to always disconnect (instead of the default toggle behavior)", 
+            inputName: "valueOnly"),
+            Argument(longName: "macAddress",
+            type: .valueOnly,
+            obligatory: true, 
+            description: "File used as input for processing",
+            inputName: "00-00-00-00-00-00"),])
+
+        let helpString = simpleCLI.helpString(["executable", "uh"])
+        XCTAssertEqual(helpString, "Usage: executable [--connect | -c] [--disconnect | d] 00-00-00-00-00-00")
     }
 
     static var allTests = [
