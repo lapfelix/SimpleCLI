@@ -151,18 +151,6 @@ open class SimpleCLI {
                 }
 
                 newArgument = argument
-
-                if let currentArgument = currentArgument {
-                    // We have a previous argument with no value. Let's process it.
-                    do {
-                        if let value = try process(argument: currentArgument) {
-                            dictionary[currentArgument.longName] = value
-                        }
-                    }
-                    catch {
-                        throw error
-                    }
-                }
             }
             else if let currentArgument = currentArgument {
                 // it's a value
@@ -187,7 +175,30 @@ open class SimpleCLI {
                 throw ProcessingError.unexpectedValueWithoutKey(value: arg)
             }
 
-            currentArgument = newArgument
+            if let currentArgument = currentArgument {
+                // We have a previous argument with no value. Let's process it.
+                do {
+                    if let value = try process(argument: currentArgument) {
+                        dictionary[currentArgument.longName] = value
+                    }
+                }
+                catch {
+                    throw error
+                }
+            }
+
+            if (newArgument?.type != .keyOnly) {
+                currentArgument = newArgument
+            } else if let newArgument = newArgument {
+                do {
+                    if let value = try process(argument: newArgument) {
+                        dictionary[newArgument.longName] = value
+                    }
+                }
+                catch {
+                    throw error
+                }
+            }
         }
 
         return dictionary

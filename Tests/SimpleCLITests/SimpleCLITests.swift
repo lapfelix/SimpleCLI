@@ -103,6 +103,11 @@ final class SimpleCLITests: XCTestCase {
 
     func testBluetoothConnectorParsing() {
         let simpleCLI = SimpleCLI(configuration: [
+            Argument(longName: "address",
+            type: .valueOnly,
+            obligatory: true, 
+            description: "File used as input for processing",
+            inputName: "00-00-00-00-00-00"),
             Argument(longName: "connect",
             shortName: "c", 
             type: .keyOnly, 
@@ -113,16 +118,10 @@ final class SimpleCLITests: XCTestCase {
             type: .keyOnly,
             description: "Use to always disconnect (instead of the default toggle behavior)", 
             inputName: "valueOnly"),
-            Argument(longName: "address",
-            type: .valueOnly,
-            obligatory: true, 
-            description: "File used as input for processing",
-            inputName: "00-00-00-00-00-00"),
             ])
             
-
-        let parsed = simpleCLI.parseArgs(["executablepath", "00-00-00-00-00-00"])
-        XCTAssertEqual(parsed, ["address":"00-00-00-00-00-00"])
+        let parsed = simpleCLI.parseArgs(["executablepath", "--connect", "00-00-00-00-00-00"])
+        XCTAssertEqual(parsed, ["address": "00-00-00-00-00-00", "connect": "true"])
     }
 
     static var allTests = [
