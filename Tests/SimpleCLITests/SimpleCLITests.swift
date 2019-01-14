@@ -41,7 +41,7 @@ final class SimpleCLITests: XCTestCase {
     func testHelpStringOneArgValueOnly() {
         let simpleCLI = SimpleCLI(configuration: [Argument(longName: "input", type: .valueOnly, obligatory: true, description: "File used as input for processing", inputName: "/path/to/file")])
         let helpString = simpleCLI.helpString(["executable", "uh"])
-        XCTAssertEqual(helpString, "Usage: executable </path/to/file>")
+        XCTAssertEqual(helpString, "Usage: executable /path/to/file")
     }
 
     func testHelpStringOneArgKeyOnly() {
@@ -76,7 +76,7 @@ final class SimpleCLITests: XCTestCase {
             description: "File used as input for processing"),])
 
         let helpString = simpleCLI.helpString(["executable", "uh"])
-        XCTAssertEqual(helpString, "Usage: executable --keyValue </path/to/file> <valueOnly> --keyOnly")
+        XCTAssertEqual(helpString, "Usage: executable --keyValue </path/to/file> valueOnly --keyOnly")
     }
 
     func testBluetoothConnectorTest() {
@@ -98,7 +98,31 @@ final class SimpleCLITests: XCTestCase {
             inputName: "00-00-00-00-00-00"),])
 
         let helpString = simpleCLI.helpString(["executable", "uh"])
-        XCTAssertEqual(helpString, "Usage: executable [--connect | -c] [--disconnect | d] 00-00-00-00-00-00")
+        XCTAssertEqual(helpString, "Usage: executable [--connect | -c] [--disconnect | -d] 00-00-00-00-00-00")
+    }
+
+    func testBluetoothConnectorParsing() {
+        let simpleCLI = SimpleCLI(configuration: [
+            Argument(longName: "connect",
+            shortName: "c", 
+            type: .keyOnly, 
+            description: "Use to always connect (instead of the default toggle behavior)", 
+            inputName: "/path/to/file"),
+            Argument(longName: "disconnect",
+            shortName: "d", 
+            type: .keyOnly,
+            description: "Use to always disconnect (instead of the default toggle behavior)", 
+            inputName: "valueOnly"),
+            Argument(longName: "address",
+            type: .valueOnly,
+            obligatory: true, 
+            description: "File used as input for processing",
+            inputName: "00-00-00-00-00-00"),
+            ])
+            
+
+        let parsed = simpleCLI.parseArgs(["executablepath", "00-00-00-00-00-00"])
+        XCTAssertEqual(parsed, ["address":"00-00-00-00-00-00"])
     }
 
     static var allTests = [
